@@ -23,23 +23,28 @@ router.post('/', (req, res, next) => {
   } else {
     const ip = process.env.WEBAPP_IP || '127.0.0.1';
 
-    const benchmarker = spawn('/opt/go/bin/benchmarker', [
-      '-t', `http://${ip}/`,
-      '-u', '/opt/go/src/github.com/catatsuy/private-isu/benchmarker/userdata',
-    ]);
+    db.run('INSERT INTO executions (status, timestamp) VALUES (0, ?)', Date.now(), function () {
+      const executionID = this.lastID;
 
-    let result;
+      const benchmarker = spawn('/opt/go/bin/benchmarker', [
+        '-t', `http://${ip}/`,
+        '-u', '/opt/go/src/github.com/catatsuy/private-isu/benchmarker/userdata',
+      ]);
 
-    benchmarker.stdout.pipe(concat((data) => {
-      result = JSON.parse(data);
-    }));
+      benchmarker.stdout.pipe(concat((data) => {
+        const result = JSON.parse(data);
 
-    benchmarker.on('close', (code) => {
-      if (code !== 0) {
-        res.json({error: true});
-      } else {
-        res.json({error: false, result});
-      }
+        db.run('UPDATE executions SET status = 1, score = $score, result = $result WHERE id = $id', {
+          $score: result.score,
+          $result: data.toString(),
+          $id: executionID,
+        });
+      }));
+
+      db.all('SELECT * FROM executions LIMIT 100', (error, executions) => {
+        if (error) return res.sendStatus(500);
+        res.render('index', {title: 'Express', executions});
+      });
     });
   }
 });
