@@ -19,9 +19,10 @@ router.get('/', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   if (executing) {
-    res.json({error: true});
+    res.json({error: true, message: 'Benchmark is running'});
   } else {
     const ip = process.env.WEBAPP_IP || '127.0.0.1';
+    executing = true;
 
     db.run('INSERT INTO executions (status, timestamp) VALUES (0, ?)', Date.now(), function () {
       const executionID = this.lastID;
@@ -33,6 +34,7 @@ router.post('/', (req, res, next) => {
 
       benchmarker.stdout.pipe(concat((data) => {
         const result = JSON.parse(data);
+        executing = false;
 
         db.run('UPDATE executions SET status = 1, score = $score, result = $result WHERE id = $id', {
           $score: result.score,

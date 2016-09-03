@@ -18,7 +18,7 @@ block content
       for execution in executions.sort((a, b) => b.timestamp - a.timestamp)
         tr
           th(scope='row')= execution.id
-          td= execution.status === 0 ? 'Executing' : 'Completed'
+          td= execution.status === 0 ? 'Running' : 'Completed'
           td
             strong(style='color: red')= execution.score
           td(style='width: 40%; font-family: monospace')= execution.result
