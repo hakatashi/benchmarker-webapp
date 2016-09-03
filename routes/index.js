@@ -41,10 +41,7 @@ router.post('/', (req, res, next) => {
         });
       }));
 
-      db.all('SELECT * FROM executions LIMIT 100', (error, executions) => {
-        if (error) return res.sendStatus(500);
-        res.render('index', {title: 'Express', executions});
-      });
+      res.redirect('/');
     });
   }
 });
