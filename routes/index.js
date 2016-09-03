@@ -1,6 +1,9 @@
 const {spawn} = require('child_process');
 const concat = require('concat-stream');
 
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('db.sqlite3');
+
 const express = require('express');
 const router = express.Router();
 
@@ -8,7 +11,10 @@ let executing = false;
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
+  db.all('SELECT * FROM executions LIMIT 100', (error, executions) => {
+    if (error) return res.sendStatus(500);
+    res.render('index', {title: 'Express', executions});
+  });
 });
 
 router.post('/', (req, res, next) => {
