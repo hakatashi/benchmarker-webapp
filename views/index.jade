@@ -1,6 +1,22 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  p= JSON.stringify(executions)
+  h1 Private ISUCON Web Admin
+  
+  table.table.table-striped
+    thead
+      tr
+        th #
+        th Status
+        th Score
+        th Result
+        th Timestamp
+    tbody
+      for execution in executions
+        tr
+          th(scope='row')= execution.id
+          td= execution.status === 0 ? 'Executing' : 'Completed'
+          td
+            strong(style='color: red')= execution.score
+          td= execution.result
+          td= new Date(execution.timestamp).toISOString()
