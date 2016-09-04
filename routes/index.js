@@ -32,16 +32,54 @@ router.post('/', (req, res, next) => {
         '-u', '/opt/go/src/github.com/catatsuy/private-isu/benchmarker/userdata',
       ]);
 
-      benchmarker.stdout.pipe(concat((data) => {
-        const result = JSON.parse(data);
+      let data
+
+      Promise.all([new Promise((resolve, reject) => {
+        benchmarker.stdout.pipe(concat((data) => {
+          resolve(data);
+        }));
+      }), new Promise((resolve, reject) => {
+        benchmarker.stderr.pipe(concat((data) => {
+          resolve(data);
+        }));
+      }), new Promise((resolve, reject) => {
+        benchmarker.on('close', (code) => {
+          resolve(code);
+        });
+      })]).then(([stdout, stderr, code]) => {
         executing = false;
 
+        const {score, result} = (() => {
+          if (code !== 0) {
+            return {
+              score: 0,
+              result: stderr.toString(),
+            };
+          } else {
+            let data;
+
+            try {
+              data = JSON.parse(stdout);
+            } catch (e) {
+              return {
+                score: 0,
+                result: `JSON decode error while parsing "${stdout}"`,
+              };
+            }
+
+            return {
+              score: data.score || 0,
+              result: stdout.toString(),
+            };
+          }
+        })();
+
         db.run('UPDATE executions SET status = 1, score = $score, result = $result WHERE id = $id', {
-          $score: result.score,
-          $result: data.toString(),
+          $score: score,
+          $result: result,
           $id: executionID,
         });
-      }));
+      })
 
       res.redirect('/');
     });
