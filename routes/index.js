@@ -85,7 +85,7 @@ router.post('/', (req, res, next) => {
           $id: executionID,
         });
 
-        slack.notify('Benchmark finished');
+        slack.notify(`Benchmark finished (Score: ${score})`);
       })
 
       res.redirect('/');
