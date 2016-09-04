@@ -15,7 +15,7 @@ block content
         th Result
         th Timestamp
     tbody
-      for execution in executions.sort((a, b) => b.timestamp - a.timestamp)
+      for execution in executions
         tr
           th(scope='row')= execution.id
           td= execution.status === 0 ? 'Running' : 'Completed'

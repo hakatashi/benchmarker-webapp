@@ -11,7 +11,7 @@ let executing = false;
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  db.all('SELECT * FROM executions LIMIT 100', (error, executions) => {
+  db.all('SELECT * FROM executions ORDER BY id DESC LIMIT 100', (error, executions) => {
     if (error) return res.sendStatus(500);
     res.render('index', {title: 'Express', executions});
   });
