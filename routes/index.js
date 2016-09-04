@@ -1,5 +1,8 @@
 const {spawn} = require('child_process');
 const concat = require('concat-stream');
+const Slack = require('node-slackr');
+
+const slack = new Slack(process.env.SLACK_WEBHOOK_URL, {channel: '#isucon'});
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('db.sqlite3');
@@ -31,6 +34,8 @@ router.post('/', (req, res, next) => {
         '-t', `http://${ip}/`,
         '-u', '/opt/go/src/github.com/catatsuy/private-isu/benchmarker/userdata',
       ]);
+
+      slack.notify('Benchmark started');
 
       let data
 
@@ -79,6 +84,8 @@ router.post('/', (req, res, next) => {
           $result: result,
           $id: executionID,
         });
+
+        slack.notify('Benchmark finished');
       })
 
       res.redirect('/');
