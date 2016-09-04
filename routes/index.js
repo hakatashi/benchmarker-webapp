@@ -55,7 +55,7 @@ router.post('/', (req, res, next) => {
         executing = false;
 
         const {score, result} = (() => {
-          if (code !== 0) {
+          if (code !== 0 && code !== 2) {
             return {
               score: 0,
               result: JSON.stringify({
@@ -73,7 +73,12 @@ router.post('/', (req, res, next) => {
             } catch (e) {
               return {
                 score: 0,
-                result: `JSON decode error while parsing "${stdout}"`,
+                result: JSON.stringify({
+                  message: `JSON decode error while parsing "${stdout}"`,
+                  stdout: stdout.toString(),
+                  stderr: stderr.toString(),
+                  code: code,
+                }),
               };
             }
 
