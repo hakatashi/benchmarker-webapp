@@ -58,7 +58,12 @@ router.post('/', (req, res, next) => {
           if (code !== 0) {
             return {
               score: 0,
-              result: stderr.toString(),
+              result: JSON.stringify({
+                message: `exit code ${code}`,
+                stdout: stdout.toString(),
+                stderr: stderr.toString(),
+                code: code,
+              }),
             };
           } else {
             let data;
