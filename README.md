@@ -18,6 +18,7 @@ nvm install 6
 npm install forever -g
 git clone https://github.com/hakatashi/benchmarker-webapp.git
 cd benchmarker-webapp
+npm install
 sqlite3 db.sqlite3 'create table executions(id integer PRIMARY KEY AUTOINCREMENT, status integer, score integer, result text, timestamp integer)'
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxxxxxxxxxxxxxxxxxxxxx WEBAPP_IP=xxx.xxx.xxx.xxx forever start -c "npm start" .
 ```
