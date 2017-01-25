@@ -1,5 +1,7 @@
 # benchmarker-webapp
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hakatashi/benchmarker-webapp.svg)](https://greenkeeper.io/)
+
 ![](images/screenshot.png)
 
 [pixivの社内ISUCON](https://github.com/catatsuy/private-isu)のポータルサイトの簡易実装です。ソロプレイ専用。
